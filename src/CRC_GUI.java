@@ -29,7 +29,7 @@ public class CRC_GUI extends JFrame {
         inputPanel.add(iterationsField);
 
 
-        methodSelector = new JComboBox<>(new String[] { "CRCx8", "CRCx16" });
+        methodSelector = new JComboBox<>(new String[] { "CRC-16", "CRC optimize" });
         inputPanel.add(new JLabel("Typ CRC:"));
         inputPanel.add(methodSelector);
 
@@ -67,7 +67,7 @@ public class CRC_GUI extends JFrame {
             }
 
             String selectedMethod = (String) methodSelector.getSelectedItem();
-            int crc = "CRCx8".equals(selectedMethod)
+            int crc = "CRC-16".equals(selectedMethod)
                     ? ModbusCRCTwoTables.computeModbusCRC(bytes)
                     : ModbusCRCSingleTable.computeModbusCRC(bytes);
 
@@ -77,7 +77,7 @@ public class CRC_GUI extends JFrame {
             //Pomiar czasu
             long startTime = System.nanoTime();
             for (int i = 0; i < n; i++) {
-                if ("CRCx8".equals(selectedMethod)) {
+                if ("CRC-16".equals(selectedMethod)) {
                     ModbusCRCTwoTables.computeModbusCRC(bytes);
                 } else {
                     ModbusCRCSingleTable.computeModbusCRC(bytes);
