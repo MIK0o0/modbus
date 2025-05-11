@@ -7,6 +7,7 @@ public class CRC_GUI extends JFrame {
     private final JTextField inputField;
     private final JTextField iterationsField;
     private final JTextArea resultArea;
+    private final JComboBox<String> methodSelector;
 
     public CRC_GUI() {
         super("Modbus CRC Kalkulator");
@@ -17,27 +18,30 @@ public class CRC_GUI extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 5, 5));
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2, 5, 5));
 
-        inputPanel.add(new JLabel("Sekwencja bajtów (hex):"));
+        inputPanel.add(new JLabel("Sekwencja bajtów \\(hex\\):"));
         inputField = new JTextField();
-
         inputPanel.add(inputField);
 
         inputPanel.add(new JLabel("Liczba powtórzeń:"));
         iterationsField = new JTextField();
         inputPanel.add(iterationsField);
 
+
+        methodSelector = new JComboBox<>(new String[] { "CRCx8", "CRCx16" });
+        inputPanel.add(new JLabel("Typ CRC:"));
+        inputPanel.add(methodSelector);
+
         JButton calculateButton = new JButton("Oblicz CRC");
         calculateButton.addActionListener(this::calculateCRC);
-        inputPanel.add(calculateButton);
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
 
         resultArea = new JTextArea();
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
-
-        mainPanel.add(inputPanel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(calculateButton, BorderLayout.SOUTH);
 
         add(mainPanel);
     }
@@ -62,14 +66,22 @@ public class CRC_GUI extends JFrame {
                 bytes[i] = (byte) Integer.parseInt(hex, 16);
             }
 
-            int crc = ModbusCRCTwoTables.computeModbusCRC(bytes);
+            String selectedMethod = (String) methodSelector.getSelectedItem();
+            int crc = "CRCx8".equals(selectedMethod)
+                    ? ModbusCRCTwoTables.computeModbusCRC(bytes)
+                    : ModbusCRCSingleTable.computeModbusCRC(bytes);
+
             String crcHex = String.format("%04X", crc);
             String swappedCrc = crcHex.substring(2) + crcHex.substring(0, 2);
 
-            // Pomiar czasu
+            //Pomiar czasu
             long startTime = System.nanoTime();
             for (int i = 0; i < n; i++) {
-                ModbusCRCTwoTables.computeModbusCRC(bytes);
+                if ("CRCx8".equals(selectedMethod)) {
+                    ModbusCRCTwoTables.computeModbusCRC(bytes);
+                } else {
+                    ModbusCRCSingleTable.computeModbusCRC(bytes);
+                }
             }
             long totalTime = System.nanoTime() - startTime;
 
