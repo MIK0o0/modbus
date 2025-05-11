@@ -21,6 +21,7 @@ public class CRC_GUI extends JFrame {
 
         inputPanel.add(new JLabel("Sekwencja bajtów (hex):"));
         inputField = new JTextField();
+
         inputPanel.add(inputField);
 
         inputPanel.add(new JLabel("Liczba powtórzeń:"));
@@ -48,6 +49,10 @@ public class CRC_GUI extends JFrame {
 
             if (input.length() % 2 != 0) {
                 JOptionPane.showMessageDialog(this, "Nieparzysta liczba znaków w sekwencji!", "Błąd", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (input.length() / 2 > 256) {
+                JOptionPane.showMessageDialog(this, "Sekwencja nie może być dłuższa niż 256 bajtów!", "Błąd", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
